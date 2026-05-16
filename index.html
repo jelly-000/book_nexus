@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>十书认知补全 — 个人成长操作系统</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0A0A0F;--gold:#D4AF37;--gold-light:#F5E6A3;--gold-dark:#C59B27;--text:#E8E6E3;--text-dim:rgba(212,175,55,0.6);--glass:rgba(212,175,55,0.04);--glass-border:rgba(212,175,55,0.12);--radius:12px}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:2;font-size:15.5px;cursor:none;overflow-x:hidden;background-image:radial-gradient(ellipse at 20% 50%,rgba(212,175,55,0.03) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(212,175,55,0.02) 0%,transparent 50%)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(var(--gold),var(--gold-dark));border-radius:3px}
+#cursor-glow{position:fixed;top:0;left:0;width:24px;height:24px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,0.6),rgba(212,175,55,0) 70%);pointer-events:none;z-index:99999;mix-blend-mode:screen;transform:translate3d(-50%,-50%,0);transition:width 0.3s,height 0.3s;will-change:transform}
+#cursor-glow.hover{width:48px;height:48px}
+#particle-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99998}
+.container{max-width:860px;margin:0 auto;padding:28px 20px}
+h1{font-size:2.2rem;background:linear-gradient(135deg,var(--gold),var(--gold-light),var(--gold-dark));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;font-weight:600}
+h2{font-size:1.4rem;color:var(--gold);margin:40px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--glass-border);font-weight:400;letter-spacing:0.03em}
+h3{font-size:1.1rem;color:var(--gold-light);margin:24px 0 10px;font-weight:500}
+h4{font-size:0.95rem;color:var(--text-dim);margin:16px 0 6px;font-weight:500}
+p{margin-bottom:14px;text-align:justify}
+.gold-line{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:28px 0}
+.card{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);padding:20px 24px;margin-bottom:16px;backdrop-filter:blur(8px);transition:all 0.3s}
+.card:hover{border-color:rgba(212,175,55,0.25);box-shadow:0 0 12px rgba(212,175,55,0.06)}
+.ic{font-size:0.65em;color:var(--gold);cursor:help;font-weight:600;vertical-align:super;margin-left:1px}
+.btn{display:inline-block;padding:10px 28px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));color:var(--bg);border:none;border-radius:8px;font-size:0.92rem;font-weight:500;cursor:pointer;transition:all 0.3s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(212,175,55,0.35)}
+.tab-bar{display:flex;gap:3px;margin-bottom:14px;flex-wrap:wrap}
+.tab-btn{padding:6px 14px;background:var(--glass);border:1px solid var(--glass-border);border-radius:8px;color:var(--text-dim);cursor:pointer;transition:all 0.3s;font-size:0.82rem}
+.tab-btn.active,.tab-btn:hover{background:rgba(212,175,55,0.12);color:var(--gold);border-color:var(--gold)}
+.tp{display:none}.tp.active{display:block}
+.quiz-option{display:block;width:100%;text-align:left;padding:10px 14px;margin:5px 0;background:var(--glass);border:1px solid var(--glass-border);border-radius:8px;cursor:pointer;transition:all 0.3s;color:var(--text);font-size:0.88rem}
+.quiz-option:hover{border-color:var(--gold);background:rgba(212,175,55,0.08)}
+.quiz-option.correct{border-color:#4CAF50;background:rgba(76,175,80,0.12);color:#81C784}
+.quiz-option.wrong{border-color:#f44336;background:rgba(244,67,54,0.12);color:#EF9A9A}
+.fg{margin-bottom:12px}.fg label{display:block;color:var(--text-dim);margin-bottom:4px;font-size:0.82rem}
+.fg select{width:100%;padding:8px 12px;background:var(--glass);border:1px solid var(--glass-border);border-radius:8px;color:var(--text);font-size:0.9rem;outline:none}
+.db{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);padding:20px;margin-bottom:20px}
+.db .st{padding:12px 16px;border-left:3px solid var(--gold);margin:10px 0;background:rgba(212,175,55,0.03)}
+.db .st.con{border-left-color:#e57373}
+.sa{scroll-margin-top:32px}
+.fade-in{opacity:1;transform:translateY(0);transition:all 0.5s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+blockquote{border-left:2px solid var(--gold);padding:8px 16px;margin:12px 0;color:var(--text-dim);font-style:italic}
+ul,ol{padding-left:22px;margin-bottom:12px}li{margin-bottom:6px}
+.kg-node{display:inline-block;padding:6px 14px;margin:4px;background:var(--glass);border:1px solid var(--glass-border);border-radius:20px;font-size:0.82rem;color:var(--gold-light);transition:all 0.3s}
+.kg-node:hover{border-color:var(--gold);background:rgba(212,175,55,0.1)}
+.kg-edge{color:var(--text-dim);font-size:0.78rem;margin:0 4px}
+.kg-cluster{padding:16px;margin-bottom:14px;border:1px dashed var(--glass-border);border-radius:var(--radius)}
+.kg-cluster-title{color:var(--gold);font-weight:500;margin-bottom:8px;font-size:0.9rem}
+.synthesis-box{background:linear-gradient(135deg,rgba(212,175,55,0.06),rgba(212,175,55,0.02));border:1px solid var(--glass-border);border-radius:var(--radius);padding:18px 22px;margin:16px 0}
+@media print{body{background:#fff;color:#000;cursor:auto;font-size:11pt}#cursor-glow,#particle-canvas,.no-print{display:none!important}.card,.db{border-color:#ccc;background:#fff;box-shadow:none}h1{color:#333;-webkit-text-fill-color:#333}h2{color:#555;border-color:#ddd}.ic{color:#666}.gold-line{background:#ccc}}
+
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,sans-serif}
+canvas{display:block;cursor:grab}
+canvas:active{cursor:grabbing}
+#tooltip{
+  position:fixed;display:none;pointer-events:none;z-index:100;
+  background:rgba(13,11,26,0.92);border:1px solid rgba(212,175,55,0.2);
+  border-radius:10px;padding:14px 18px;max-width:300px;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:0 8px 32px rgba(0,0,0,0.5),0 0 20px rgba(212,175,55,0.05);
+  font-size:13px;line-height:1.6;color:#e8e6e3;
+  transition:opacity 0.15s;
+}
+#tooltip .tt-title{font-weight:600;font-size:14px;margin-bottom:4px}
+#tooltip .tt-book{font-size:11px;color:rgba(212,175,55,0.6);margin-bottom:6px}
+#tooltip .tt-desc{font-size:12.5px;color:rgba(232,230,227,0.75)}
+#controls{
+  position:absolute;bottom:12px;right:12px;display:flex;gap:8px;z-index:50;
+}
+#controls button{
+  padding:6px 14px;background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.2);
+  border-radius:8px;color:#D4AF37;font-size:12px;cursor:pointer;
+  backdrop-filter:blur(8px);transition:all 0.2s;
+}
+#controls button:hover{background:rgba(212,175,55,0.2);border-color:#D4AF37}
+#legend{
+  position:absolute;top:12px;left:12px;z-index:50;
+  background:rgba(13,11,26,0.8);border:1px solid rgba(212,175,55,0.1);
+  border-radius:10px;padding:14px 18px;backdrop-filter:blur(8px);
+}
+#legend .lg-item{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:12px;color:rgba(232,230,227,0.6)}
+#legend .lg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+#search-box{
+  position:absolute;top:12px;right:12px;z-index:50;
+}
+#search-box input{
+  padding:8px 14px;background:rgba(13,11,26,0.8);border:1px solid rgba(212,175,55,0.2);
+  border-radius:8px;color:#e8e6e3;font-size:13px;outline:none;width:200px;
+  backdrop-filter:blur(8px);transition:border-color 0.2s;
+}
+#search-box input:focus{border-color:#D4AF37}
+#search-box input::placeholder{color:rgba(232,230,227,0.3)}
+
+</style>
+</head>
+<body>
+<div id="cursor-glow"></div>
+<canvas id="particle-canvas"></canvas>
+<div class="container">
+
+<section id="preface" class="sa">
+<h1>十书认知补全</h1>
+<p style="color:var(--text-dim);font-size:0.95rem;margin-bottom:20px">十本书 · 一个认知宇宙 · 你的个人成长操作系统</p>
+<div class="gold-line"></div>
+<div class="card">
+<p>你即将进入的不是一份读书笔记，而是一次<strong>认知重构</strong>。我们从十本跨越财富、思维、AI、健康与自我管理的经典著作中，提取了最核心的认知模型、方法论和行动框架，将它们编织成一张完整的知识网络。</p>
+<p>这不是速读，也不是摘要——这是一场<strong>认知无损压缩</strong>。每一个观点都保留了原书的推理链条，每一个方法都附带了操作步骤和障碍对策。页面中<sup class="ic">[书名]</sup>标记表示该观点的出处。十本书之间有共识、有分歧、有互补——这些交叉点恰恰是最有价值的认知升级机会。</p>
+<p>建议阅读时间：30-40分钟。从任何一个模块开始都可以，因为它们彼此关联、互相增强。</p>
+</div>
+<div class="gold-line"></div>
+</section>
+<section id="knowledge-graph" class="sa" style="position:relative;overflow:hidden;margin-bottom:24px">
+<canvas id="gc" style="width:100%;height:520px;display:block;border-radius:12px;border:1px solid rgba(212,175,55,0.12);background:#0a0a0f"></canvas>
+<div id="kg-tip"><div class="tt-title"></div><div class="tt-book"></div><div class="tt-desc"></div></div>
+<div id="kg-legend"></div>
+<div id="search-box"><input type="text" id="kg-search" placeholder="搜索节点..."></div>
+<div id="controls">
+  <button onclick="kgReset()">⟲ 重置</button>
+  <button onclick="kgTogglePhys()">⏸ 暂停</button>
+  <button onclick="kgToggleLbl()">🏷 标签</button>
+</div>
+</section>
+
+
+
+
+<section id="cognition" class="sa">
+<h2>🧠 核心认知升级</h2>
+<p style="color:var(--text-dim);margin-bottom:16px">五个你可能正在犯的认知错误。每个错误都配有来自多本书的交叉验证、真实案例、数据和推理链条。</p>
+
+<div class="card">
+<h3>错误认知 #1：赚钱需要资本和人脉，普通人注定很难</h3>
+<p>这是一个流传最广、危害最深的误解。绝大多数人一辈子从未直接从事过生产，也从未从事过销售——所以他们也不可能教育自家孩子如何生产和销售。<sup class="ic">[财富的真相]</sup> 更神奇的是，这两样东西恰好都不能也不用指望教育体系来教，要么靠家长言传身教，要么自学。</p>
+<p>财富的唯一正当来源是生产。<sup class="ic">[财富的真相]</sup> 生产需要三样东西：材料（来自自然）、需求（来自社会）、时间（来自自身）。关键洞察在于：<strong>无论是材料还是需求，获取它们的前提都是知识，而知识只能靠自己花时间学习</strong>。换句话说，我们能用的所有生产资料，归根结底都是从自己身上挖出来的。<sup class="ic">[财富的真相]</sup></p>
+<p>在知识面前，没有"富二代"。无论你是谁，都要从零学起。学习就要花时间。知识面前，时间面前，人人平等。每个人的出生，无论是谁，都被自动赋予了大致相等的量——即每个人自己的寿命。<sup class="ic">[财富的真相]</sup></p>
+<p>收入的差异主要源自与有效生产之间的距离——<strong>离生产越近的人赚钱越多，离生产越远的人赚钱越少</strong>。<sup class="ic">[财富的真相]</sup> 有效生产的直接参与者分为四层：所有者（赚钱最多）、设计者、组织者、销售者。被组织者（打工者）是最次要的。公务员虽然不直接参与生产，但他们是生产的间接参与者——政府本身也有协调社会生产的义务。</p>
+<p>有一种工作真实更赚钱，但基于误解，绝大多数人不喜欢做，甚至心存鄙视——那就是<strong>销售</strong>。<sup class="ic">[财富的真相]</sup> 销售是制作与需求之间的中间环节，离两边都更近。做销售有种种好处：可以看到、学到生产知识和需求知识；收入可以无上限（有业绩提成激励机制）；对学历、专业甚至出身都没有要求；没有破产压力——"销售是饿不死的，因为他们无论什么时候、无论在哪里，都可以重新开始。"<sup class="ic">[财富的真相]</sup></p>
+<p>我们一生中可以直接出售的时间算下来大约只占生命的38%。<sup class="ic">[财富的真相]</sup> 把如此稀缺的时间以那么低的价格直接出售，实在不划算。把生产资料直接卖出去肯定是最不划算的——泥巴可以做成砖头，砖头可以用来盖房子——卖泥巴赚钱还是卖房子赚钱？<sup class="ic">[财富的真相]</sup></p>
+<p>《个体崛起》从另一个角度验证了同一个结论：打工者思维挣现在，股权思维要未来。<sup class="ic">[个体崛起]</sup> 稳定是最大的风险。普通人是舆论认知，牛人是底层认知——普通人只一味提升技术效率，而牛人提升认知效率。<sup class="ic">[个体崛起]</sup> 你的平台就是你的一生信用背书，用来撬动你更大的事业。<sup class="ic">[个体崛起]</sup></p>
+<p>《借钱》则补充了金融维度：理解"钱生钱"的门道是摆脱隐形贫困的关键。<sup class="ic">[借钱]</sup> 利息和债务的历史就是人类金融文明的历史——从宗教禁令到现代金融体系，借贷推动了资本主义发展。发现美洲大陆之后，人们渴求资产，情愿付息，教会伦理不得不改天换地。<sup class="ic">[借钱]</sup></p>
+<p>教育体系的脱节加剧了这个问题。从18世纪普鲁士的义务教育制度到今天的"六三三制"，300年来现代教育体系重点培养的并不是有效生产的所有者、设计者和组织者，也不是销售者——它所培养的主要是生产的被组织者。<sup class="ic">[财富的真相]</sup></p>
+<p><strong>自检：</strong>你今天花了多少时间在"生产"（创造价值）vs"消费"（消耗时间）上？你的收入模式是在直接出售时间，还是在用时间创造可复制的价值？你有没有考虑过从销售岗位开始，学习生产知识？</p>
+</div>
+
+<div class="card">
+<h3>错误认知 #2：只要足够努力，就一定能看到希望</h3>
+<p>这是最让人痛苦的认知陷阱。一位读者一年前决心改变自己：每天早起、每周跑步三次、读一本书、订阅三个学习专栏、报了很多网络课、重新学英语……每天都被安排得满满的。刚开始变化很大，但越往后越看不到希望。<sup class="ic">[认知驱动]</sup></p>
+<p>问题的症结在于：<strong>我们过度专注于内向成长而忽视了外向成长——重习惯轻技能，重输入轻输出。</strong><sup class="ic">[认知驱动]</sup></p>
+<p>内向成长是围绕自身展开的成长活动：早起、跑步、阅读等——相当于培养习惯。外向成长是围绕外界展开的活动：写作、画画、编程等——相当于打造技能。培养习惯容易，因为不需要严格标准，好坏只要自己认可就行。打造技能难，因为好坏全由外界评定——行就是行，不行就是不行。<sup class="ic">[认知驱动]</sup></p>
+<p>急于求成和避难趋易是人类天性。在缺乏觉知的情况下，我们会不自觉地选择容易的模式。坚持这些习惯只能让我们成为"更好的人"，而不会让我们成为"很厉害的人"。反之，如果我们能更多地投入外向成长，培养过硬的技能，持续对外产出作品或价值，我们就能参与社会价值体系的循环，就能被他人强烈地需要。<sup class="ic">[认知驱动]</sup></p>
+<p>有些技能属于"转换"类——你花一份时间做一份事，产出一份价值（如打工、手艺人）。有些技能属于"复制"类——你花一份时间创造的作品可以被无限复制（如写作、编程、音乐创作）。<strong>在互联网时代，"复制"类技能才是获取人生自由的关键。</strong><sup class="ic">[认知驱动]</sup></p>
+<p>改变自己的关键是创造价值。<sup class="ic">[认知驱动]</sup> 很多人在确立目标时只看到"我想要"，却忽略了"我能给"。当你把视角从"我想要"转到"我能给"的时候，很多浮躁、妄念就会马上消失。生活中每一个选择都可以用"三五年之后还能产生影响"这个标准来衡量。<sup class="ic">[认知驱动]</sup></p>
+<p>利他的本质是爱。<sup class="ic">[认知驱动]</sup> 稻盛和夫为了参与通信市场竞争，每晚临睡自问动机是否至真至纯，经过半年才确认没有一丝杂念，才着手建立DDI公司，最终与垄断巨头NTT分庭抗礼。<sup class="ic">[认知驱动]</sup></p>
+<p>《穷查理宝典》从投资视角验证了同样的逻辑：泰德·威廉姆斯是过去70年来惟一一个单个赛季打出400次安打的棒球运动员——他把击打区划分为77个格子，只有当球落在"最佳"格子时才挥棒。<sup class="ic">[穷查理宝典]</sup> 投资也是如此：不需要频繁交易，只需几次关键决策。"你付给交易员的费用更少，听到的废话也更少。"<sup class="ic">[穷查理宝典]</sup></p>
+<p><strong>自检：</strong>你最近一年的努力，有多少是在"感动自己"的内向成长，有多少是在"创造价值"的外向成长？你有没有任何一项可以被"复制"的技能？你能不能用"三五年标准"来评估你当前的努力方向？</p>
+</div>
+
+<div class="card">
+<h3>错误认知 #3：稳定的工作是安全的</h3>
+<p>在AI时代，任何可以被算法预测和替代的工作都面临被取代的风险。<sup class="ic">[Nexus]</sup> GPT-4在律师资格考试中超过90%考生，医学知识超过所有医学院学生。<sup class="ic">[拐点]</sup> ChatGPT月活超15亿，是人类历史上任何科技产品都未曾达到的普及速度。<sup class="ic">[拐点]</sup></p>
+<p>ChatGPT不是聊天机器人——它是一个使用GPT模型、以聊天方式为界面的信息处理工具。<sup class="ic">[拐点]</sup> AI能做的事远超大多数人的想象：编程、翻译、写文章、创意构思、数据分析、理解图片声音、直接操控计算机和机器人。<sup class="ic">[拐点]</sup></p>
+<p>但AI也有根本性的局限。AI可能犯错（"幻觉"）、可能有偏见、可能被操控。<sup class="ic">[Nexus]</sup> 算法可能比我们更了解自己——这意味着它能操控我们的选择而不自知。硅幕可能分裂世界。<sup class="ic">[Nexus]</sup> 信息不等于真理，但AI生成的信息正在淹没真相。<sup class="ic">[Nexus]</sup></p>
+<p>最佳策略不是抗拒AI，也不是盲目依赖AI，而是<strong>AI预测+人的判断=最佳决策</strong>。<sup class="ic">[拐点]</sup> 把事情直接交给AI做是软弱且危险的。人有人的用处——人类的具身智能与自主思考是不可替代的独特价值。<sup class="ic">[拐点]</sup></p>
+<p>在个体崛起时代，你的平台就是你的一生信用背书。<sup class="ic">[个体崛起]</sup> 从土鳖到高级，差的也就是一门外语——很多思维瓶颈，一门外语就能跨过去。<sup class="ic">[个体崛起]</sup> 要赚未来的钱。收入指数增长需要三个条件：打造自己能力的"单品爆款"；做那些让自己更值钱的事；经常复盘。<sup class="ic">[个体崛起]</sup></p>
+<p><strong>自检：</strong>如果明天失业，你有什么"可复制"的技能可以立刻变现？你的个人品牌是否足以让你在行业中被需要？你有没有在学习AI工具来增强自己的能力？</p>
+</div>
+
+<div class="card">
+<h3>错误认知 #4：跟着感觉走就是做自己</h3>
+<p>你的感知不完美、记忆不完美、信息不充分。<sup class="ic">[Beyond Feelings]</sup> 即使最聪明的人也会犯错。真理是被发现的，不是被创造的。<sup class="ic">[Beyond Feelings]</sup></p>
+<p>"我的更好"思维（mine-is-better thinking）是批判性思考的基本障碍。<sup class="ic">[Beyond Feelings]</sup> 自我中心的人认为自己的一切都优于别人。民族中心主义的人认为自己的文化、民族、宗教优于其他。这种思维让我们无法客观评估信息，让我们把感觉当真理，把偏见当立场。</p>
+<p>Beyond Feelings系统梳理了四大类逻辑错误：<strong>视角错误</strong>（贫乏视角、无端假设、非此即彼、盲目从众、绝对主义、相对主义）、<strong>程序错误</strong>（偏见性证据审查、双重标准、草率结论、过度概括、过度简化、事后归因）、<strong>表达错误</strong>（自相矛盾、循环论证、无意义陈述、错误权威、虚假类比、非理性诉求）、<strong>反应错误</strong>（自动拒绝、转移话题、转移举证责任、稻草人谬误、攻击批评者）。<sup class="ic">[Beyond Feelings]</sup></p>
+<p>查理·芒格研究了一辈子人类灾难性的错误，总结出<strong>25种导致误判的心理倾向</strong>：奖励/惩罚超级反应倾向、喜欢/热爱倾向、讨厌/憎恨倾向、避免怀疑倾向、避免不一致性倾向、好奇心倾向、康德式公平倾向、艳羡/妒忌倾向、回馈倾向、受简单联想影响的倾向、简单的避免痛苦的心理倾向、自视过高倾向、过度乐观倾向、被剥夺超级反应倾向、社会认同倾向、对比错误反应倾向、压力影响倾向、错误衡量易得性倾向、不用就忘倾向、化学物质错误影响倾向、衰老错误影响倾向、权威错误影响倾向、废话倾向、重视理由倾向、lollapalooza倾向（多种力量共同作用产生的极端效应）。<sup class="ic">[穷查理宝典]</sup></p>
+<p>区分知情意见和不知情意见至关重要。大多数人持有的是不知情意见——他们没有充分的信息基础，只是凭感觉或从众心理形成了观点。查理说："如果我要拥有一种观点，如果我不能够比全世界最聪明、最有能力、最有资格反驳这个观点的人更能够证否自己，我就不配拥有这个观点。"<sup class="ic">[穷查理宝典]</sup></p>
+<p><strong>自检：</strong>你最近一次改变观点是什么时候？如果超过三个月没有更新过任何认知，你可能陷入了"确认偏见"。你能不能列举出反对自己观点的三个最强论据？</p>
+</div>
+
+<div class="card">
+<h3>错误认知 #5：身体和大脑是分开的——心态好就行</h3>
+<p>出问题的不是你——是你的大脑！<sup class="ic">[脑雾修复]</sup> 脑雾、焦虑、抑郁的根源不是"心态不好"或"不够坚强"，而是大脑三种关键化学物质的失衡：<strong>血清素</strong>（情绪稳定、乐观、自信）、<strong>多巴胺</strong>（动力、愉悦、专注）和<strong>皮质醇</strong>（压力激素）。<sup class="ic">[脑雾修复]</sup></p>
+<p>血清素浓度低→容易感到生理和情绪上的痛苦→用止痛药、抗抑郁药和抗焦虑药→脑雾、性功能低下，可能产生药物依赖性。<sup class="ic">[脑雾修复]</sup> 多巴胺浓度低→倦怠、无聊，感到生活失去滋味→从事高风险活动或摄取咖啡因、兴奋剂→从情绪高涨直落谷底。<sup class="ic">[脑雾修复]</sup> 皮质醇浓度不平衡→白天无精打采、晚上焦虑失眠→摄取咖啡因和安眠药→疲倦和失眠问题加重。<sup class="ic">[脑雾修复]</sup></p>
+<p>更糟糕的是，高皮质醇会压低多巴胺浓度，同时阻碍血清素到达大脑某些区域，还会抑制神经发生——新脑细胞的生成过程。这是一个自我强化的恶性循环。<sup class="ic">[脑雾修复]</sup></p>
+<p>数据触目惊心：仅17%的美国成年人心理健康处于最佳状态；每10名成年人中就有1人服用抗抑郁药；5000万美国人睡眠不足；全球痴呆患者目前3500万，2050年将达1.15亿。<sup class="ic">[脑雾修复]</sup></p>
+<p>《生活黑客》从系统化视角补充了长期方案：生活黑客区别于普通问题解决者的关键在于，他们真正在意的不是有没有用，而是<strong>对个人生活的掌控感</strong>。<sup class="ic">[生活黑客]</sup> 古代的斯多葛主义者、印度佛教、道教和儒家，从来都不是说探讨理论就行，都是要身体力行，要系统化地生活。<sup class="ic">[生活黑客]</sup></p>
+<p><strong>自检：</strong>你每天的屏幕时间是否超过6小时？你上一次运动是什么时候？你每天睡眠是否达到7小时？你有多久没有和朋友面对面深度交流了？</p>
+</div>
+</section>
+<section id="methods" class="sa">
+<h2>⚙️ 完整方法体系</h2>
+<p style="color:var(--text-dim);margin-bottom:14px">五大主题，每个主题整合多本书的互补智慧。</p>
+<div class="tab-bar">
+<button class="tab-btn active" data-tab="wealth">💰 财富认知</button>
+<button class="tab-btn" data-tab="thinking">🧩 思维升级</button>
+<button class="tab-btn" data-tab="ai">🤖 AI时代</button>
+<button class="tab-btn" data-tab="health">🧬 身心健康</button>
+<button class="tab-btn" data-tab="selfmgmt">🎯 自我管理</button>
+</div>
+
+<div id="tab-wealth" class="tp active">
+<div class="card">
+<h3>💰 财富认知：从生产到投资的完整路径</h3>
+<h4>核心原则</h4>
+<p>财富的唯一正当来源是生产。<sup class="ic">[财富的真相]</sup> 生产有三种形式：发现（向自然索取材料）、制作（设计和组织生产）、交易（销售和贸易）。其中交易（销售）是最容易入门、收入上限最高、且没有破产风险的生产形式。</p>
+<h4>从打工到生产的六步路径</h4>
+<ol>
+<li><strong>认知转变：</strong>理解"时间是生产资料"——你一生中赚到的所有钱，本质上都是从自己的时间里挖出来的。把时间直接卖出去是最不划算的。<sup class="ic">[财富的真相]</sup></li>
+<li><strong>选择销售：</strong>如果你暂时无法设计或组织有效生产，那就去做销售。销售离制作和需求都更近，可以看到、学到生产知识和需求知识。<sup class="ic">[财富的真相]</sup></li>
+<li><strong>积累知识：</strong>用销售积累的知识和资金，逐步向有效生产的设计者和组织者靠近。<sup class="ic">[财富的真相]</sup></li>
+<li><strong>从"转换"到"复制"：</strong>尽早储备"可复制"技能——写作、编程、创作。<sup class="ic">[认知驱动]</sup></li>
+<li><strong>理解钱生钱：</strong>学习利息、投资和资本运作的基本原理。<sup class="ic">[借钱]</sup></li>
+<li><strong>投资实践：</strong>用"坐等投资法"——不需要频繁交易，只需几次关键决策。在赔率有利于你时才下注。<sup class="ic">[穷查理宝典]</sup></li>
+</ol>
+<h4>常见障碍与对策</h4>
+<p><em>"我没有时间"</em> → 时间是等速赋予每个人的。你不是没有时间，而是把时间花在了不产生价值的地方。<sup class="ic">[财富的真相]</sup></p>
+<p><em>"做销售太丢人"</em> → 销售是离生产最近的工作。这种偏见让你远离了最容易入门的生产形式。<sup class="ic">[财富的真相]</sup></p>
+<p><em>"不知道该生产什么"</em> → 需求越刚性、越高频、越广阔，你的产出就越值钱。用"三五年标准"筛选。<sup class="ic">[认知驱动]</sup></p>
+<div class="synthesis-box">
+<h4>🔗 四书合力</h4>
+<p>《财富的真相》提供底层认知（财富来自生产），《认知驱动》提供价值创造方法论（如何产出有价值的作品），《个体崛起》提供个人品牌策略（如何让你的价值被看见），《借钱》提供金融知识（理解利息和资本运作）——四者结合形成完整的财富认知链。</p>
+</div>
+</div>
+</div>
+
+<div id="tab-thinking" class="tp">
+<div class="card">
+<h3>🧩 思维升级：多元模型 + 批判性思考</h3>
+<h4>多元思维模型</h4>
+<p>查理不会对一家公司的财务信息进行肤浅的独立评估，而是对公司内部经营状况及其所处的更大"生态系统"作出全面分析。他借用并完美糅合了来自历史学、心理学、生理学、数学、工程学、生物学、物理学、化学、统计学、经济学等学科的分析工具。<sup class="ic">[穷查理宝典]</sup> 最重要的模型包括：工程学的冗余备份模型、数学的复利模型、物理学和化学的临界点/自我催化模型、生物学的现代达尔文综合模型、心理学的认知误判模型。</p>
+<h4>Lollapalooza效应</h4>
+<p>当几个模型联合起来，就能得到lollapalooza效应——两种、三种或四种力量共同作用于同一个方向，得到的通常不仅仅是几种力量之和。就像物理学里的临界质量，达到一定程度就能引发核爆炸。<sup class="ic">[穷查理宝典]</sup></p>
+<h4>逆向思维</h4>
+<p>"反过来想，总是反过来想。"研究人类失败的原因比研究成功更重要。<sup class="ic">[穷查理宝典]</sup> "我只想知道我将来会死在什么地方，这样我就可以永远不去那里。"在2004年的伯克希尔年会上，有年轻股东问巴菲特怎样才能在生活中取得成功，查理插话说："别吸毒。别乱穿马路。避免染上艾滋病。"<sup class="ic">[穷查理宝典]</sup></p>
+<h4>能力圈原则</h4>
+<p>局限在自己的能力圈以内。一种不能够界定其边界的能力不能称为真正的能力。<sup class="ic">[穷查理宝典]</sup> 关于投资，有三个选项：可以投资、不能投资、太难理解。查理首先选定一个容易理解的、有发展空间的、能够在任何市场环境下生存的主流行业。<sup class="ic">[穷查理宝典]</sup></p>
+<h4>坐等投资法</h4>
+<p>查理愿意将大比例的资金投给个别"受关注"的机会。只要购买三家公司的股票就足够了。泰德·威廉姆斯把击打区划分为77个格子，只有当球落在"最佳"格子时才挥棒。投资者也应该如此。<sup class="ic">[穷查理宝典]</sup></p>
+<h4>Beyond Feelings的防御工事</h4>
+<p>芒格提供进攻策略（如何做好决策），Beyond Feelings提供防御策略（如何避免坏决策）。四大类逻辑错误——视角错误、程序错误、表达错误、反应错误——是每个决策者必须掌握的基础功。<sup class="ic">[Beyond Feelings]</sup></p>
+<div class="synthesis-box">
+<h4>🔗 双书合力</h4>
+<p>芒格说"如果我要拥有一种观点，如果我不能够比全世界最聪明的人更能够证否自己，我就不配拥有这个观点"。Beyond Feelings恰好提供了系统化的证否工具——逻辑谬误清单。两本书一攻一守，构成完整的思维升级框架。</p>
+</div>
+</div>
+</div>
+
+<div id="tab-ai" class="tp">
+<div class="card">
+<h3>🤖 AI时代：用AI增强而非替代</h3>
+<h4>AI的真实能力</h4>
+<p>ChatGPT不是聊天机器人——它是一个使用GPT模型、以聊天方式为界面的信息处理工具。<sup class="ic">[拐点]</sup> 2023年是AI元年。GPT-4在律师资格考试中超过90%考生，医学知识超过所有医学院学生。<sup class="ic">[拐点]</sup> AI能做的事：编程、翻译、写文章、创意构思、数据分析、理解图片声音、操控计算机和机器人。<sup class="ic">[拐点]</sup></p>
+<h4>AI能力的三个境界</h4>
+<p><strong>模仿：</strong>AI学习人类的模式并复现。<strong>涌现：</strong>AI在大量训练后展现出人类未明确教授的能力。<strong>开悟：</strong>AI在某些领域达到或超越人类专家水平。<sup class="ic">[拐点]</sup></p>
+<h4>AI的根本局限</h4>
+<p>AI可能犯错（"幻觉"）、可能有偏见、可能被操控。<sup class="ic">[Nexus]</sup> 算法可能比我们更了解自己——这意味着它能操控我们的选择而不自知。硅幕可能分裂世界。<sup class="ic">[Nexus]</sup> 信息不等于真理，但AI生成的信息正在淹没真相。<sup class="ic">[Nexus]</sup> 纳粹和斯大林主义是信息操控的典型案例——AI监控系统可能成为极权主义的新工具。<sup class="ic">[Nexus]</sup></p>
+<h4>最佳策略</h4>
+<p><strong>AI预测+人的判断=最佳决策。</strong><sup class="ic">[拐点]</sup> 人有人的用处——人类的具身智能与自主思考是不可替代的独特价值。<sup class="ic">[拐点]</sup> 直觉高于逻辑——在AI时代，人类的直觉和判断更珍贵。<sup class="ic">[拐点]</sup> 把事情直接交给AI做是软弱且危险的。不要因为AI能写文章就放弃写作——写作是磨炼认知的绝佳途径。</p>
+</div>
+</div>
+
+<div id="tab-health" class="tp">
+<div class="card">
+<h3>🧬 身心健康：大脑化学平衡修复方案</h3>
+<h4>三大化学物质详解</h4>
+<p><strong>血清素：</strong>情绪稳定、乐观、自信。浓度低→容易感到痛苦→用止痛药/抗抑郁药→脑雾、药物依赖。<sup class="ic">[脑雾修复]</sup></p>
+<p><strong>多巴胺：</strong>动力、愉悦、专注。浓度低→倦怠、无聊→高风险活动/咖啡因→情绪过山车。<sup class="ic">[脑雾修复]</sup></p>
+<p><strong>皮质醇：</strong>压力激素。浓度不平衡→白天无精打采、晚上焦虑失眠→咖啡因/安眠药→问题加重。<sup class="ic">[脑雾修复]</sup></p>
+<h4>恶性循环机制</h4>
+<p>高皮质醇→压低多巴胺→阻碍血清素→抑制神经发生→焦虑加重→皮质醇更高。失眠→疲倦→咖啡因→更无法入睡→安眠药→嗜睡→更多咖啡因→情绪恶化→抗抑郁药→体重增加→更多焦虑。每一个"解决方案"都在加重问题。<sup class="ic">[脑雾修复]</sup></p>
+<h4>21天修复计划</h4>
+<p><strong>第1-7天·情绪革命：</strong>减少糖分和精制碳水，增加ω-3脂肪酸（核桃、深海鱼）、优质蛋白质。核桃和草饲肉类可以改善心情。姜黄可以大大降低痴呆风险。<sup class="ic">[脑雾修复]</sup></p>
+<p><strong>第8-14天·能量革命：</strong>固定睡眠时间（每天同一时间入睡和起床），每天30分钟运动，减少睡前蓝光。运动有助于神经发生。<sup class="ic">[脑雾修复]</sup></p>
+<p><strong>第15-21天·心灵革命：</strong>建立精神实践（冥想/正念），恢复深度人际联结，找到生活目标和意义。<sup class="ic">[脑雾修复]</sup></p>
+<h4>生活黑客的补充</h4>
+<p>用"量化自我"方法追踪睡眠、饮食、运动数据，用实验验证什么对你有效。数据驱动的健康管理比"感觉"更可靠。<sup class="ic">[生活黑客]</sup></p>
+</div>
+</div>
+
+<div id="tab-selfmgmt" class="tp">
+<div class="card">
+<h3>🎯 自我管理：系统化生活黑客</h3>
+<h4>六大黑客维度</h4>
+<p><strong>时间黑客：</strong>要事优先——把最重要的事安排在精力最好的时段。记录时间使用、消除浪费、优化流程。<sup class="ic">[生活黑客]</sup></p>
+<p><strong>动机黑客：</strong>内在动机远比外在奖励持久有效。奥德修斯式的目标追踪：预先承诺、约束自己。<sup class="ic">[生活黑客]</sup></p>
+<p><strong>物质黑客：</strong>从多到极少。精要主义：只保留真正重要的物品和承诺。<sup class="ic">[生活黑客]</sup></p>
+<p><strong>健康黑客：</strong>数据驱动的健康管理。追踪睡眠、饮食、运动数据，用实验验证。<sup class="ic">[生活黑客]</sup></p>
+<p><strong>关系黑客：</strong>优化社交质量而非数量。深度关系比1000个社交媒体好友更有价值。<sup class="ic">[生活黑客]</sup></p>
+<p><strong>意义黑客：</strong>斯多葛哲学+正念+放眼自身以外。古代斯多葛主义者的生活智慧至今适用。<sup class="ic">[生活黑客]</sup></p>
+<h4>核心理念</h4>
+<p>不要试图一次改变所有维度。从一个维度开始，建立正反馈循环，然后扩展。系统化地生活，而不是被生活推着走。<sup class="ic">[生活黑客]</sup></p>
+</div>
+</div>
+</section>
+<section id="debates" class="sa">
+<h2>⚖️ 深度分歧辩论区</h2>
+
+<div class="db">
+<h3>争议 #1：稳定 vs 冒险</h3>
+<div class="st"><h4>🔺 正方：稳定是最大的风险</h4><p>打工者思维只看眼前工资，股权思维看的是未来可能性。真正的安全感来自不可替代的能力。不能形成和巩固个人品牌的努力，都是伪努力。<sup class="ic">[个体崛起]</sup></p></div>
+<div class="st con"><h4>🔻 反方：规律稳定是大脑健康的基础</h4><p>不规律的生活节奏会严重扰乱大脑化学物质平衡。稳定的作息、规律的运动、可预期的生活节奏是身心健康的基石。冒险带来的压力可能摧毁你的大脑。<sup class="ic">[脑雾修复]</sup></p></div>
+<div class="card" style="background:rgba(212,175,55,0.05)"><h4>🎯 情境化选择</h4><p>区分<strong>外在稳定</strong>（工作、收入）和<strong>内在稳定</strong>（作息、习惯、心理）。你可以追求事业上的冒险和突破，同时保持生活节奏的规律和健康。最佳策略：用稳定的基础支撑冒险的行动。</p></div>
+</div>
+
+<div class="db">
+<h3>争议 #2：拥抱 AI vs 警惕 AI</h3>
+<div class="st"><h4>🔺 正方：AI提高人的价值</h4><p>AI让每个人都能获得超级助手。用AI增强而非替代，人的价值反而提升了。2023年是AI元年。<sup class="ic">[拐点]</sup></p></div>
+<div class="st con"><h4>🔻 反方：AI可能成为控制工具</h4><p>算法操控选择、硅幕分裂世界、AI监控成为极权工具。信息≠真理。<sup class="ic">[Nexus]</sup></p></div>
+<div class="card" style="background:rgba(212,175,55,0.05)"><h4>🎯 情境化选择</h4><p>两书不矛盾。万维钢说<strong>个人层面</strong>：用AI增强自己。赫拉利说<strong>社会层面</strong>：警惕AI被滥用。最佳策略：积极学习AI工具，同时保持批判性思维，关注AI伦理。</p></div>
+</div>
+
+<div class="db">
+<h3>争议 #3：输入优先 vs 输出优先</h3>
+<div class="st"><h4>🔺 正方：输出驱动一切</h4><p>培养习惯容易，打造技能难——但只有产出作品才能被社会需要。重技能轻习惯，重输出轻输入。<sup class="ic">[认知驱动]</sup></p></div>
+<div class="st con"><h4>🔻 反方：知识是生产资料的终极来源</h4><p>不学习就不知道什么有用。向自然索取材料、向社会识别需求都需要知识。<sup class="ic">[财富的真相]</sup></p></div>
+<div class="card" style="background:rgba(212,175,55,0.05)"><h4>🎯 调和方案（芒格）</h4><p>学习的目的不是积累信息，而是建立多元思维模型来指导行动。输出是为了验证和巩固学习。螺旋式前进：输入→小规模输出→反馈→更深入输入→更高质量输出。<sup class="ic">[穷查理宝典]</sup></p></div>
+</div>
+
+<div class="db">
+<h3>争议 #4：利己 vs 利他</h3>
+<div class="st"><h4>🔺 正方：利他是最好的人生策略</h4><p>利他的本质是爱。利他的结果是利己——不带功利心的付出最后都会加倍返还。<sup class="ic">[认知驱动]</sup></p></div>
+<div class="st con"><h4>🔻 反方：理性利己是进步的原动力</h4><p>个人私欲是成长进步的原生动力。急于求成和避难趋易是人类天性。<sup class="ic">[认知驱动]</sup></p></div>
+<div class="card" style="background:rgba(212,175,55,0.05)"><h4>🎯 消解二元对立</h4><p>生产本身就是利他——你生产的东西必须对别人有用才有价值。<sup class="ic">[财富的真相]</sup> 理性即利己——在赔率有利于你时才下注。<sup class="ic">[穷查理宝典]</sup> 自我完善即服务他人——斯多葛哲学。<sup class="ic">[生活黑客]</sup></p></div>
+</div>
+
+<div class="db">
+<h3>争议 #5：信息自由 vs 信息控制</h3>
+<div class="st"><h4>🔺 正方：信息网络推动文明进步</h4><p>从石刻到印刷术到互联网，信息网络的扩展是人类文明进步的核心驱动力。AI是信息网络的最新节点。<sup class="ic">[Nexus]</sup></p></div>
+<div class="st con"><h4>🔻 反方：信息网络也是控制工具</h4><p>纳粹和斯大林主义证明，信息网络可以成为极权控制的利器。AI监控系统可能比任何历史工具都更有效。<sup class="ic">[Nexus]</sup></p></div>
+<div class="card" style="background:rgba(212,175,55,0.05)"><h4>🎯 赫拉利的答案</h4><p>信息≠真理。故事可以创造连接也可以制造幻觉。关键不在于信息多少，而在于是否保持有意义的对话空间。硅幕可能分裂世界——保持对话比获取信息更重要。<sup class="ic">[Nexus]</sup></p></div>
+</div>
+</section>
+<section id="action-plan" class="sa">
+<h2>📋 个人行动计划生成器</h2>
+<div class="card">
+<div class="fg"><label>最想突破的领域</label><select id="plan-domain">
+<option value="wealth">💰 财富与事业</option><option value="thinking">🧩 思维与认知</option>
+<option value="health">🧬 身心健康</option><option value="career">🚀 职场与个人品牌</option>
+<option value="ai">🤖 AI时代适应力</option></select></div>
+<div class="fg"><label>每天能投入的自我提升时间</label><select id="plan-time">
+<option value="30">30分钟以下</option><option value="60">30-60分钟</option>
+<option value="120">1-2小时</option><option value="180">2小时以上</option></select></div>
+<div class="fg"><label>目前最大的障碍</label><select id="plan-obstacle">
+<option value="time">没有时间</option><option value="direction">找不到方向</option>
+<option value="motivation">缺乏动力/坚持不下来</option><option value="skill">技能不足</option>
+<option value="health">身体/精力跟不上</option></select></div>
+<button class="btn" onclick="generatePlan()">生成我的行动计划 ✨</button>
+<div id="plan-output" style="margin-top:16px"></div>
+</div>
+</section><section id="book-reading" class="sa">
+<h2>📚 每书精读</h2><details><summary>📖 《财富的真相》 — 李笑来</summary><div class="dc">
+<h4>核心主张</h4><p>财富的唯一正当来源是生产。时间是终极生产资料。知识面前没有富二代。</p>
+<h4>关键案例</h4><ul><li>诺贝尔经济学奖得主自己不赚钱的讽刺</li><li>长期资本基金1998年破产——两位诺贝尔奖得主的对冲基金</li><li>一生可出售时间仅约38天</li><li>99%的人靠直接出售时间获取收入</li><li>销售是最被低估的生产形式</li></ul>
+<h4>独特框架</h4><p>生产三要素模型：材料(自然)+需求(社会)+时间(自身)。收入差异=与有效生产的距离。</p>
+<h4>最值得吸收的3点</h4><ol><li><strong>时间是生产资料——认知转变本身就是最大的财富</strong></li><li><strong>教育体系培养的是被组织者，而非生产的设计者和销售者</strong></li><li><strong>改变想法即改变生活：思考→决策→行动→命运</strong></li></ol>
+</div></details><details><summary>📖 《Beyond Feelings》 — Vincent Ruggiero</summary><div class="dc">
+<h4>核心主张</h4><p>批判性思维是超越感觉和偏见的必修技能。大多数人的观点是不知情意见。</p>
+<h4>关键案例</h4><ul><li>感知不完美、记忆不完美的科学证据</li><li>25种常见逻辑谬误的系统分类</li><li>知情意见vs不知情意见</li><li>大众文化如何塑造个体身份</li></ul>
+<h4>独特框架</h4><p>四层错误分析框架：视角错误→程序错误→表达错误→反应错误。</p>
+<h4>最值得吸收的3点</h4><ol><li><strong>「我的更好」思维是一切偏见的根源</strong></li><li><strong>理性不是天赋，是可以训练的技能</strong></li><li><strong>真理是被发现的，不是被创造的</strong></li></ol>
+</div></details><details><summary>📖 《个体崛起》 — 陈立飞</summary><div class="dc">
+<h4>核心主张</h4><p>个人品牌是最核心资产。稳定是最大的风险。</p>
+<h4>关键案例</h4><ul><li>90后更容易抓住互联网机遇</li><li>从土鳖到高级只差一门外语</li><li>头等舱思维差距</li><li>死工资正在拖垮你</li></ul>
+<h4>独特框架</h4><p>个人品牌双轴模型：深耕(纵向)+迭代(横向)。收入指数增长=单品爆款+更值钱的事+复盘。</p>
+<h4>最值得吸收的3点</h4><ol><li><strong>稳定是最大的风险</strong></li><li><strong>平台就是本事</strong></li><li><strong>收入指数增长需要三个条件</strong></li></ol>
+</div></details><details><summary>📖 《拐点》 — 万维钢</summary><div class="dc">
+<h4>核心主张</h4><p>AI不是聊天机器人，而是信息处理工具。2023年是AI元年。</p>
+<h4>关键案例</h4><ul><li>GPT-4通过律师考试超过90%考生</li><li>ChatGPT月活超15亿</li><li>Sora文字直接生成视频</li><li>AI能力三境界：模仿→涌现→开悟</li></ul>
+<h4>独特框架</h4><p>AI能力三境界模型。AI预测+人的判断=最佳决策。prompt工程是新时代基本功。</p>
+<h4>最值得吸收的3点</h4><ol><li><strong>AI预测+人的判断=最佳决策</strong></li><li><strong>人要比AI凶</strong></li><li><strong>直觉高于逻辑——人类的直觉和判断更珍贵</strong></li></ol>
+</div></details><details><summary>📖 《借钱》 — 查尔斯·盖斯特</summary><div class="dc">
+<h4>核心主张</h4><p>利息和债务的历史就是金融文明的历史。</p>
+<h4>关键案例</h4><ul><li>犹太人与典当行——金融业起源</li><li>荷兰奇迹——利润法则</li><li>罗斯柴尔德金融帝国</li><li>2008年次贷危机</li><li>伊斯兰金融——无利息模式</li></ul>
+<h4>独特框架</h4><p>借贷演化路径：宗教禁令→合法化→证券化→消费革命。债务既是工具也是武器。</p>
+<h4>最值得吸收的3点</h4><ol><li><strong>理解「钱生钱」的门道是摆脱贫困的关键</strong></li><li><strong>利息的合法化经历了漫长的宗教和法律斗争</strong></li><li><strong>债务既是工具也是武器</strong></li></ol>
+</div></details><details><summary>📖 《脑雾修复》 — 麦克·道</summary><div class="dc">
+<h4>核心主张</h4><p>大脑化学物质失衡是一切心理问题的根源。出问题的不是你，是你的大脑。</p>
+<h4>关键案例</h4><ul><li>仅17%美国成年人心理健康最佳</li><li>每10人中1人服用抗抑郁药</li><li>5000万美国人睡眠不足</li><li>痴呆患者将从3500万增至1.15亿</li></ul>
+<h4>独特框架</h4><p>21天三阶段模型：情绪革命(饮食)→能量革命(睡眠/运动)→心灵革命(精神实践)。</p>
+<h4>最值得吸收的3点</h4><ol><li><strong>血清素+多巴胺+皮质醇的平衡是一切的基础</strong></li><li><strong>最需要照顾自己的时候，往往最不想照顾自己</strong></li><li><strong>大脑需要：营养+运动+睡眠+目标+精神实践+人际联结</strong></li></ol>
+</div></details><details><summary>📖 《穷查理宝典》 — 查理·芒格</summary><div class="dc">
+<h4>核心主张</h4><p>多元思维模型是决策的终极武器。研究失败比研究成功更重要。</p>
+<h4>关键案例</h4><ul><li>伯克希尔50年投资奇迹</li><li>投资比亚迪的两分钟效应</li><li>金融衍生产品预警</li><li>坐等投资法</li><li>25种人类误判心理学</li></ul>
+<h4>独特框架</h4><p>25种人类误判心理学+能力圈原则+逆向思维+lollapalooza效应。</p>
+<h4>最值得吸收的3点</h4><ol><li><strong>反过来想，总是反过来想</strong></li><li><strong>避免愚蠢比追求聪明更重要</strong></li><li><strong>理性是最稀缺的品质——它不是天赋，是习惯</strong></li></ol>
+</div></details><details><summary>📖 《认知驱动》 — 周岭</summary><div class="dc">
+<h4>核心主张</h4><p>改变自己的关键是创造价值。重技能轻习惯，重输入轻输出。</p>
+<h4>关键案例</h4><ul><li>从零写作到人民日报转载</li><li>10万:1千的输入输出比</li><li>为什么很努力却看不到希望</li><li>利他不是牺牲而是创造价值——稻盛和夫DDI案例</li></ul>
+<h4>独特框架</h4><p>内向成长(习惯) vs 外向成长(技能) 双轨模型。价值交换规律。</p>
+<h4>最值得吸收的3点</h4><ol><li><strong>重技能轻习惯，重输出轻输入</strong></li><li><strong>复制类技能比转换类技能更有未来</strong></li><li><strong>三五年后还能产生影响——用这个标准筛选一切</strong></li></ol>
+</div></details><details><summary>📖 《生活黑客》 — 约瑟夫·小雷格尔</summary><div class="dc">
+<h4>核心主张</h4><p>系统化自我完善，核心是掌控感而非效率。</p>
+<h4>关键案例</h4><ul><li>GTD系统的广泛应用</li><li>极简主义者和百万富翁的殊途同归</li><li>多相睡眠实验</li><li>搭讪的起源到约会经济学</li></ul>
+<h4>独特框架</h4><p>六维黑客框架：时间/动机/物质/健康/关系/意义。斯多葛哲学+正念。</p>
+<h4>最值得吸收的3点</h4><ol><li><strong>在意的不是有没有用，而是掌控感</strong></li><li><strong>自我完善的精神古已有之</strong></li><li><strong>系统化地生活，而不是被生活推着走</strong></li></ol>
+</div></details><details><summary>📖 《Nexus》 — Yuval Noah Harari</summary><div class="dc">
+<h4>核心主张</h4><p>信息网络的历史就是人类文明的历史。信息≠真理。</p>
+<h4>关键案例</h4><ul><li>从石刻到印刷术到AI</li><li>纳粹和斯大林主义的信息操控</li><li>Facebook算法对民主的影响</li><li>AI监控系统——极权主义的新工具</li></ul>
+<h4>独特框架</h4><p>信息网络演化模型：故事→文档→算法→AI。硅幕风险。</p>
+<h4>最值得吸收的3点</h4><ol><li><strong>信息≠真理——永恒的警示</strong></li><li><strong>AI是网络参与者，不是简单工具</strong></li><li><strong>硅幕可能分裂世界——保持有意义的对话空间</strong></li></ol>
+</div></details></section>
+<section id="network" class="sa">
+<h2>🔗 跨书知识网络</h2>
+<p style="color:var(--text-dim);margin-bottom:14px">十二个核心概念节点，标注了它们在哪些书中出现、如何相互关联。</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px">
+<div class="card" style="padding:14px"><div style="color:var(--gold);font-weight:500;margin-bottom:4px">时间 × 财富</div><p style="font-size:0.88rem">时间是最根本的生产资料，所有财富都来自对时间的运用</p><div style="font-size:0.75rem;color:var(--text-dim)">📖 财富的真相 · 个体崛起 · 生活黑客</div></div>
+<div class="card" style="padding:14px"><div style="color:var(--gold);font-weight:500;margin-bottom:4px">知识 × 生产</div><p style="font-size:0.88rem">知识是向自然索取材料、向社会识别需求的前提条件</p><div style="font-size:0.75rem;color:var(--text-dim)">📖 财富的真相 · 认知驱动 · 拐点</div></div>
+<div class="card" style="padding:14px"><div style="color:var(--gold);font-weight:500;margin-bottom:4px">认知 × 命运</div><p style="font-size:0.88rem">思考引发决策，决策带来行动，行动构成命运</p><div style="font-size:0.75rem;color:var(--text-dim)">📖 财富的真相 · Beyond Feelings · 穷查理宝典</div></div>
+<div class="card" style="padding:14px"><div style="color:var(--gold);font-weight:500;margin-bottom:4px">AI × 人类价值</div><p style="font-size:0.88rem">AI不是替代品而是增强器，关键在于人类如何使用它</p><div style="font-size:0.75rem;color:var(--text-dim)">📖 拐点 · Nexus · 认知驱动</div></div>
+<div class="card" style="padding:14px"><div style="color:var(--gold);font-weight:500;margin-bottom:4px">大脑化学 × 行为</div><p style="font-size:0.88rem">血清素/多巴胺/皮质醇的平衡决定了情绪、动力和压力反应</p><div style="font-size:0.75rem;color:var(--text-dim)">📖 脑雾修复 · 生活黑客</div></div>
+<div class="card" style="padding:14px"><div style="color:var(--gold);font-weight:500;margin-bottom:4px">输出 × 成长</div><p style="font-size:0.88rem">产出作品比养成习惯更能带来实质性成长</p><div style="font-size:0.75rem;color:var(--text-dim)">📖 认知驱动 · 个体崛起</div></div>
+<div class="card" style="padding:14px"><div style="color:var(--gold);font-weight:500;margin-bottom:4px">逆向思维 × 决策</div><p style="font-size:0.88rem">研究失败比研究成功更有效，避免愚蠢比追求聪明更可靠</p><div style="font-size:0.75rem;color:var(--text-dim)">📖 穷查理宝典 · Beyond Feelings</div></div>
+<div class="card" style="padding:14px"><div style="color:var(--gold);font-weight:500;margin-bottom:4px">信息 × 真理</div><p style="font-size:0.88rem">信息不等于真理，故事可以创造连接也可以制造幻觉</p><div style="font-size:0.75rem;color:var(--text-dim)">📖 Nexus · Beyond Feelings</div></div>
+<div class="card" style="padding:14px"><div style="color:var(--gold);font-weight:500;margin-bottom:4px">债务 × 资本</div><p style="font-size:0.88rem">理解利息和债务是理解现代金融体系的基础</p><div style="font-size:0.75rem;color:var(--text-dim)">📖 借钱 · 财富的真相</div></div>
+<div class="card" style="padding:14px"><div style="color:var(--gold);font-weight:500;margin-bottom:4px">系统 × 自我</div><p style="font-size:0.88rem">系统化地管理自己比依赖意志力更有效</p><div style="font-size:0.75rem;color:var(--text-dim)">📖 生活黑客 · 脑雾修复 · 认知驱动</div></div>
+<div class="card" style="padding:14px"><div style="color:var(--gold);font-weight:500;margin-bottom:4px">个人品牌 × 时代</div><p style="font-size:0.88rem">在个体崛起的时代，不可替代的个人品牌是最核心资产</p><div style="font-size:0.75rem;color:var(--text-dim)">📖 个体崛起 · 认知驱动 · 生活黑客</div></div>
+<div class="card" style="padding:14px"><div style="color:var(--gold);font-weight:500;margin-bottom:4px">利他 × 成功</div><p style="font-size:0.88rem">创造对他人有价值的东西是一切可持续成功的底层逻辑</p><div style="font-size:0.75rem;color:var(--text-dim)">📖 认知驱动 · 穷查理宝典 · 财富的真相</div></div>
+</div>
+</section>
+<section id="citations" class="sa">
+<h2>📎 引用说明</h2>
+<div class="card">
+<p>本页面所有观点均标注了来源书目。<span style="color:var(--gold);font-size:0.85em">[书名]</span>标记表示该观点出自对应书籍。共引用10本书，涵盖财富、批判性思维、个人品牌、AI、金融、脑科学、投资心理学、认知成长、生活管理、信息网络等领域。</p>
+</div>
+</section>
+<section id="quiz" class="sa">
+<h2>✍️ 自我测试</h2>
+<div class="card" id="quiz-container">
+<div class="quiz-q" data-correct="B"><h4>Q1: 财富的唯一正当来源是什么？</h4>
+<button class="quiz-option" onclick="checkQuiz(1,'A')">A. 投资理财</button>
+<button class="quiz-option" onclick="checkQuiz(1,'B')">B. 生产</button>
+<button class="quiz-option" onclick="checkQuiz(1,'C')">C. 继承遗产</button>
+<button class="quiz-option" onclick="checkQuiz(1,'D')">D. 高薪工作</button>
+<p class="quiz-explain" style="display:none;color:var(--text-dim);margin-top:8px">💡 B。《财富的真相》：财富的唯一正当来源是生产。</p></div>
+<div class="quiz-q" data-correct="C" style="margin-top:18px"><h4>Q2: 查理·芒格认为最重要的思维方法是？</h4>
+<button class="quiz-option" onclick="checkQuiz(2,'A')">A. 正向推理</button>
+<button class="quiz-option" onclick="checkQuiz(2,'B')">B. 直觉判断</button>
+<button class="quiz-option" onclick="checkQuiz(2,'C')">C. 逆向思维（反过来想）</button>
+<button class="quiz-option" onclick="checkQuiz(2,'D')">D. 跟随大众</button>
+<p class="quiz-explain" style="display:none;color:var(--text-dim);margin-top:8px">💡 C。芒格："反过来想，总是反过来想。"</p></div>
+<div class="quiz-q" data-correct="A" style="margin-top:18px"><h4>Q3: 导致心理问题的根本原因是？</h4>
+<button class="quiz-option" onclick="checkQuiz(3,'A')">A. 大脑化学物质失衡</button>
+<button class="quiz-option" onclick="checkQuiz(3,'B')">B. 性格缺陷</button>
+<button class="quiz-option" onclick="checkQuiz(3,'C')">C. 家庭环境</button>
+<button class="quiz-option" onclick="checkQuiz(3,'D')">D. 运气不好</button>
+<p class="quiz-explain" style="display:none;color:var(--text-dim);margin-top:8px">💡 A。《脑雾修复》：出问题的不是你，是你的大脑化学物质。</p></div>
+<div class="quiz-q" data-correct="D" style="margin-top:18px"><h4>Q4: "很努力却看不到希望"的根本原因是？</h4>
+<button class="quiz-option" onclick="checkQuiz(4,'A')">A. 不够努力</button>
+<button class="quiz-option" onclick="checkQuiz(4,'B')">B. 运气不好</button>
+<button class="quiz-option" onclick="checkQuiz(4,'C')">C. 缺少贵人</button>
+<button class="quiz-option" onclick="checkQuiz(4,'D')">D. 重习惯轻技能，重输入轻输出</button>
+<p class="quiz-explain" style="display:none;color:var(--text-dim);margin-top:8px">💡 D。《认知驱动》：过度专注于内向成长而忽视外向成长。</p></div>
+<div class="quiz-q" data-correct="B" style="margin-top:18px"><h4>Q5: 《Nexus》的核心警示是什么？</h4>
+<button class="quiz-option" onclick="checkQuiz(5,'A')">A. AI会取代所有工作</button>
+<button class="quiz-option" onclick="checkQuiz(5,'B')">B. 信息≠真理，算法可能操控选择</button>
+<button class="quiz-option" onclick="checkQuiz(5,'C')">C. 人类应该禁止AI</button>
+<button class="quiz-option" onclick="checkQuiz(5,'D')">D. 信息越多越接近真理</button>
+<p class="quiz-explain" style="display:none;color:var(--text-dim);margin-top:8px">💡 B。信息≠真理，算法操控风险。</p></div>
+</div>
+</section>
+<section id="export" class="sa" style="text-align:center;padding:28px 0">
+<div class="gold-line"></div>
+<h2 style="border:none">📄 导出与分享</h2>
+<p style="color:var(--text-dim);margin-bottom:16px">导出为PDF时所有折叠内容会自动展开。</p>
+<button class="btn" onclick="exportPDF()">📄 导出为 PDF</button>
+<button class="btn" style="margin-left:10px;background:linear-gradient(135deg,#333,#555)" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆️ 回到顶部</button>
+</section>
+<div class="gold-line"></div>
+<footer style="text-align:center;padding:24px 0;color:var(--text-dim);font-size:0.78rem">
+<p>本页面内容由 AI 基于以下十本书籍的认知框架综合生成，旨在提供结构化的知识导航。</p>
+<p>AI 生成内容不能替代原书阅读。建议将此页面作为导读地图，对感兴趣的主题深入原书。</p>
+<p style="margin-top:10px;color:var(--gold)">《财富的真相》·《Beyond Feelings》·《个体崛起》·《拐点》·《借钱》·《脑雾修复》·《穷查理宝典》·《认知驱动》·《生活黑客》·《Nexus》</p>
+<p style="margin-top:4px;font-size:0.65rem;color:rgba(255,255,255,0.2)">Generated with ❤️ by LobsterAI · 2026</p>
+</footer>
+</div>
+<script>
+const cursor=document.getElementById("cursor-glow"),canvas=document.getElementById("particle-canvas"),ctx=canvas.getContext("2d");
+let particles=[],mouseX=0,mouseY=0;
+function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+resizeCanvas();window.addEventListener("resize",resizeCanvas);
+document.addEventListener("mousemove",e=>{mouseX=e.clientX;mouseY=e.clientY;cursor.style.transform=`translate3d(${mouseX}px,${mouseY}px,0)`;if(Math.random()>0.65&&particles.length<20){particles.push({x:mouseX+(Math.random()-.5)*8,y:mouseY+(Math.random()-.5)*8,s:Math.random()*2.5+0.8,a:1,vx:(Math.random()-.5)*1.2,vy:(Math.random()-.5)*1.2-0.4})}});
+const is=["a,button,.btn,.tab-btn,.ic,.kg-node,summary,.quiz-option,.fg select"];
+document.addEventListener("mouseover",e=>{if(e.target.closest(is.join(",")))cursor.classList.add("hover")});
+document.addEventListener("mouseout",e=>{if(e.target.closest(is.join(",")))cursor.classList.remove("hover")});
+function anim(){ctx.clearRect(0,0,canvas.width,canvas.height);for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.x+=p.vx;p.y+=p.vy;p.a-=0.025;p.s*=0.98;if(p.a<=0||p.s<0.2){particles.splice(i,1);continue}ctx.beginPath();ctx.arc(p.x,p.y,p.s,0,Math.PI*2);ctx.fillStyle=`rgba(212,175,55,${p.a*0.7})`;ctx.fill()}requestAnimationFrame(anim)}anim();
+document.querySelectorAll(".tab-btn").forEach(btn=>{btn.addEventListener("click",()=>{const tab=btn.dataset.tab;btn.closest("section").querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");btn.closest("section").querySelectorAll(".tp").forEach(p=>p.classList.remove("active"));document.getElementById("tab-"+tab).classList.add("active")})});
+function checkQuiz(q,a){const qEl=document.querySelectorAll(".quiz-q")[q-1],correct=qEl.dataset.correct;qEl.querySelectorAll(".quiz-option").forEach(opt=>{opt.disabled=true;opt.style.cursor="default";if(opt.textContent.startsWith(correct))opt.classList.add("correct");else if(opt.textContent.startsWith(a)&&a!==correct)opt.classList.add("wrong")});qEl.querySelector(".quiz-explain").style.display="block"}
+function generatePlan(){const d=document.getElementById("plan-domain").value,t=parseInt(document.getElementById("plan-time").value),o=document.getElementById("plan-obstacle").value;const plans={wealth:{title:"💰 财富与事业突破计划",steps:[{w:"第1周",a:"盘点时间：记录每天的时间使用，标记「生产时间」和「消费时间」",b:"《财富的真相》"},{w:"第2周",a:"选择一个「可复制」的技能方向，开始每天练习",b:"《认知驱动》"},{w:"第3周",a:"建立个人品牌：在社交平台发布第一篇专业内容",b:"《个体崛起》"},{w:"第4周",a:"学习基础金融知识：理解利息、投资和资本运作原理",b:"《借钱》"},{w:"持续",a:"每天"+t+"分钟，用「三五年标准」筛选所有投入方向",b:"综合"}]},thinking:{title:"🧩 思维升级计划",steps:[{w:"第1周",a:"学习5种常见逻辑谬误，在日常对话中练习识别",b:"《Beyond Feelings》"},{w:"第2周",a:"建立「逆向思维」习惯",b:"《穷查理宝典》"},{w:"第3周",a:"界定你的能力圈",b:"《穷查理宝典》"},{w:"第4周",a:"开始写读书笔记/文章，用输出倒逼输入",b:"《认知驱动》"},{w:"持续",a:"每天"+t+"分钟深度阅读 + 每周1篇输出",b:"综合"}]},health:{title:"🧬 身心健康修复计划",steps:[{w:"第1-7天",a:"情绪革命——减少精制碳水，增加ω-3脂肪酸",b:"《脑雾修复》"},{w:"第8-14天",a:"能量革命——固定睡眠，每天30分钟运动",b:"《脑雾修复》"},{w:"第15-21天",a:"心灵革命——建立冥想/正念习惯",b:"《脑雾修复》"},{w:"持续",a:"用「量化自我」方法追踪数据",b:"《生活黑客》"}]},career:{title:"🚀 职场与个人品牌计划",steps:[{w:"第1周",a:"盘点你的「单品爆款」能力",b:"《个体崛起》"},{w:"第2周",a:"在专业平台上发布第一篇内容",b:"《个体崛起》+《认知驱动》"},{w:"第3周",a:"加入3个高质量专业社群",b:"《个体崛起》"},{w:"第4周",a:"用「精益」方法优化工作流程",b:"《生活黑客》"},{w:"持续",a:"每天"+t+"分钟深耕 + 每周1次复盘",b:"综合"}]},ai:{title:"🤖 AI时代适应力计划",steps:[{w:"第1周",a:"学会使用ChatGPT/Claude完成工作任务",b:"《拐点》"},{w:"第2周",a:"练习prompt工程",b:"《拐点》"},{w:"第3周",a:"用AI辅助工作，保持人类判断主导权",b:"《拐点》+《Nexus》"},{w:"第4周",a:"了解AI的局限和风险",b:"《Nexus》"},{w:"持续",a:"每天"+t+"分钟学习AI + 每周1次深度输出",b:"综合"}]}};const obs={time:"⏰ 用「要事优先」原则，把最重要的事安排在精力最好的时段。",direction:"🧭 先用「三五年标准」筛选方向。",motivation:"🔥 建立「系统」——固定时间、地点、动作。",skill:"🛠 集中精力打磨一项可复制技能。",health:"💪 先修复大脑化学平衡。"};const p=plans[d];let h='<div class="card" style="border-color:var(--gold)"><h3>'+p.title+'</h3><p style="color:var(--text-dim);margin-bottom:10px">基于每天 '+t+' 分钟：</p>';p.steps.forEach(s=>{h+='<div style="padding:8px 0;border-bottom:1px solid rgba(212,175,55,0.1)"><strong style="color:var(--gold)">'+s.w+'</strong>：'+s.a+' <span style="color:var(--text-dim);font-size:0.8rem">← '+s.b+'</span></div>'});h+='<div style="margin-top:10px;padding:12px;background:rgba(212,175,55,0.05);border-radius:8px"><strong style="color:var(--gold)">🎯 障碍对策：</strong><br>'+obs[o]+'</div></div>';document.getElementById("plan-output").innerHTML=h}
+function exportPDF(){window.print()}
+const obs2=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add("visible")})},{threshold:0.06});document.querySelectorAll(".fade-in").forEach(el=>obs2.observe(el));
+if("ontouchstart" in window){cursor.style.display="none";canvas.style.display="none";document.body.style.cursor="auto"}
+</script>
+
+
+
+
+
+<script>
+// Knowledge Graph - Robust Implementation
+(function(){
+  "use strict";
+  
+  // Wait for DOM
+  function ready(fn){
+    if(document.readyState !== 'loading') fn();
+    else document.addEventListener('DOMContentLoaded', fn);
+  }
+  
+  ready(function(){
+    var c = document.getElementById('gc');
+    if(!c){ console.warn('KG: canvas not found'); return; }
+    var x = c.getContext('2d');
+    if(!x){ console.warn('KG: context not available'); return; }
+    
+    var W = 860, H = 520, dpr = window.devicePixelRatio || 1;
+    var panX = 0, panY = 0, zoom = 1;
+    var hov = null, sel = null, drag = null;
+    var physOn = true, showLbl = true, t = 0;
+    var isPan = false, psx = 0, psy = 0;
+    var searchQ = '';
+    
+    function resize(){
+      dpr = window.devicePixelRatio || 1;
+      var r = c.getBoundingClientRect();
+      W = r.width || 860; H = r.height || 520;
+      c.width = W * dpr; c.height = H * dpr;
+      x.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+    
+    var BOOKS = {
+      "财富的真相":{c:"#D4AF37",a:"财富"},"Beyond Feelings":{c:"#8B7CF6",a:"BF"},
+      "个体崛起":{c:"#FF6B6B",a:"个体"},"拐点":{c:"#4ECDC4",a:"拐点"},
+      "借钱":{c:"#F5A623",a:"借钱"},"脑雾修复":{c:"#6BCB77",a:"脑雾"},
+      "穷查理宝典":{c:"#FFD93D",a:"芒格"},"认知驱动":{c:"#A78BFA",a:"认知"},
+      "生活黑客":{c:"#F472B6",a:"黑客"},"Nexus":{c:"#22D3EE",a:"NX"}
+    };
+    
+    var N = [
+      {i:"b1_1",l:"生产=财富来源",g:"财富的真相",w:1,d:"财富唯一正当来源是生产"},
+      {i:"b1_2",l:"时间是终极生产资料",g:"财富的真相",w:.7,d:"一生可出售时间仅约38%"},
+      {i:"b1_3",l:"知识面前没有富二代",g:"财富的真相",w:.65,d:"获取生产资料的前提是知识"},
+      {i:"b1_4",l:"销售=最近的生产",g:"财富的真相",w:.55,d:"离制作和需求都近，收入无上限"},
+      {i:"b1_5",l:"收入=与生产的距离",g:"财富的真相",w:.7,d:"所有者>设计者>组织者>销售者"},
+      {i:"b1_6",l:"教育培养被组织者",g:"财富的真相",w:.5,d:"300年普鲁士教育体系"},
+      
+      {i:"b2_1",l:"感知和记忆不完美",g:"Beyond Feelings",w:.6,d:"即使最聪明的人也会犯错"},
+      {i:"b2_2",l:"「我的更好」思维",g:"Beyond Feelings",w:.7,d:"自我中心+民族中心=基本障碍"},
+      {i:"b2_3",l:"四大类逻辑错误",g:"Beyond Feelings",w:.8,d:"视角→程序→表达→反应"},
+      {i:"b2_4",l:"知情vs不知情意见",g:"Beyond Feelings",w:.6,d:"大多数人持有的是不知情意见"},
+      
+      {i:"b3_1",l:"个人品牌=核心资产",g:"个体崛起",w:.9,d:"不能形成个人品牌的努力都是伪努力"},
+      {i:"b3_2",l:"稳定是最大的风险",g:"个体崛起",w:.7,d:"打工者思维挣现在，股权思维要未来"},
+      {i:"b3_3",l:"平台就是本事",g:"个体崛起",w:.55,d:"好的平台=好的圈子=信用财富"},
+      {i:"b3_4",l:"收入指数增长",g:"个体崛起",w:.5,d:"单品爆款+更值钱的事+复盘"},
+      
+      {i:"b4_1",l:"AI=信息处理工具",g:"拐点",w:.9,d:"ChatGPT不是聊天机器人"},
+      {i:"b4_2",l:"AI能力三境界",g:"拐点",w:.65,d:"模仿→涌现→开悟"},
+      {i:"b4_3",l:"AI预测+人的判断",g:"拐点",w:.8,d:"最佳决策=AI+人"},
+      {i:"b4_4",l:"直觉高于逻辑",g:"拐点",w:.55,d:"AI时代人类直觉更珍贵"},
+      
+      {i:"b5_1",l:"利息=金融文明史",g:"借钱",w:.6,d:"从宗教禁令到现代金融"},
+      {i:"b5_2",l:"债务=工具+武器",g:"借钱",w:.7,d:"荷兰奇迹→罗斯柴尔德→次贷"},
+      {i:"b5_3",l:"理解钱生钱",g:"借钱",w:.55,d:"摆脱隐形贫困的关键"},
+      
+      {i:"b6_1",l:"大脑化学物质失衡",g:"脑雾修复",w:1,d:"血清素+多巴胺+皮质醇"},
+      {i:"b6_2",l:"恶性循环机制",g:"脑雾修复",w:.65,d:"高皮质醇→压低多巴胺→阻碍血清素"},
+      {i:"b6_3",l:"21天修复计划",g:"脑雾修复",w:.7,d:"情绪→能量→心灵革命"},
+      {i:"b6_4",l:"17%心理健康最佳",g:"脑雾修复",w:.45,d:"每10人1人服抗抑郁药"},
+      
+      {i:"b7_1",l:"多元思维模型",g:"穷查理宝典",w:1,d:"糅合多学科分析工具"},
+      {i:"b7_2",l:"反过来想",g:"穷查理宝典",w:.85,d:"研究失败比研究成功更重要"},
+      {i:"b7_3",l:"能力圈原则",g:"穷查理宝典",w:.7,d:"界定不了边界的能力不是真正的能力"},
+      {i:"b7_4",l:"Lollapalooza效应",g:"穷查理宝典",w:.6,d:"多力量共同产生极端效应"},
+      {i:"b7_5",l:"25种误判心理学",g:"穷查理宝典",w:.85,d:"奖励/惩罚、喜欢/热爱、避免怀疑..."},
+      {i:"b7_6",l:"坐等投资法",g:"穷查理宝典",w:.55,d:"只需几次关键决策"},
+      
+      {i:"b8_1",l:"输出>输入",g:"认知驱动",w:.9,d:"重技能轻习惯，重输出轻输入"},
+      {i:"b8_2",l:"复制vs转换技能",g:"认知驱动",w:.7,d:"转换=一份时间一份价值"},
+      {i:"b8_3",l:"创造价值是关键",g:"认知驱动",w:.75,d:"从「我想要」到「我能给」"},
+      {i:"b8_4",l:"利他是最好的策略",g:"认知驱动",w:.6,d:"利他的本质是爱"},
+      
+      {i:"b9_1",l:"系统化生活",g:"生活黑客",w:.75,d:"在意的是掌控感"},
+      {i:"b9_2",l:"六维黑客框架",g:"生活黑客",w:.65,d:"时间/动机/物质/健康/关系/意义"},
+      {i:"b9_3",l:"斯多葛哲学",g:"生活黑客",w:.5,d:"古代智慧至今适用"},
+      {i:"b9_4",l:"量化自我",g:"生活黑客",w:.45,d:"追踪数据，用实验验证"},
+      
+      {i:"b10_1",l:"信息≠真理",g:"Nexus",w:.9,d:"信息网络史=人类文明史"},
+      {i:"b10_2",l:"信息网络演化",g:"Nexus",w:.6,d:"故事→文档→算法→AI"},
+      {i:"b10_3",l:"硅幕风险",g:"Nexus",w:.75,d:"算法操控选择，硅幕分裂世界"},
+      {i:"b10_4",l:"信息操控历史",g:"Nexus",w:.5,d:"纳粹、斯大林、Facebook算法"}
+    ];
+    
+    var E = [
+      {a:"b1_1",b:"b1_2",w:3},{a:"b1_1",b:"b1_3",w:3},{a:"b1_1",b:"b1_4",w:2},
+      {a:"b1_1",b:"b1_5",w:3},{a:"b1_5",b:"b1_6",w:2},
+      {a:"b2_1",b:"b2_2",w:3},{a:"b2_2",b:"b2_3",w:3},{a:"b2_3",b:"b2_4",w:2},
+      {a:"b3_1",b:"b3_2",w:3},{a:"b3_1",b:"b3_3",w:2},{a:"b3_1",b:"b3_4",w:2},
+      {a:"b4_1",b:"b4_2",w:3},{a:"b4_1",b:"b4_3",w:3},{a:"b4_3",b:"b4_4",w:2},
+      {a:"b5_1",b:"b5_2",w:3},{a:"b5_2",b:"b5_3",w:2},
+      {a:"b6_1",b:"b6_2",w:3},{a:"b6_2",b:"b6_3",w:3},{a:"b6_4",b:"b6_1",w:2},
+      {a:"b7_1",b:"b7_4",w:3},{a:"b7_1",b:"b7_2",w:3},{a:"b7_2",b:"b7_3",w:2},
+      {a:"b7_5",b:"b7_1",w:3},{a:"b7_6",b:"b7_3",w:2},
+      {a:"b8_1",b:"b8_2",w:3},{a:"b8_3",b:"b8_1",w:3},{a:"b8_4",b:"b8_3",w:2},
+      {a:"b9_1",b:"b9_2",w:3},{a:"b9_2",b:"b9_4",w:2},{a:"b9_3",b:"b9_1",w:2},
+      {a:"b10_1",b:"b10_2",w:3},{a:"b10_2",b:"b10_3",w:3},{a:"b10_4",b:"b10_3",w:2},
+      // Cross-book
+      {a:"b1_1",b:"b8_3",w:3},{a:"b1_2",b:"b8_2",w:2},{a:"b1_3",b:"b8_1",w:2},
+      {a:"b1_1",b:"b3_1",w:2},{a:"b1_5",b:"b3_2",w:2},{a:"b1_1",b:"b5_3",w:2},
+      {a:"b7_1",b:"b2_3",w:3},{a:"b7_5",b:"b2_2",w:3},{a:"b7_2",b:"b2_4",w:2},
+      {a:"b7_6",b:"b8_3",w:2},{a:"b7_6",b:"b1_1",w:2},
+      {a:"b4_3",b:"b8_1",w:2},{a:"b4_1",b:"b10_1",w:3},{a:"b4_2",b:"b10_3",w:2},{a:"b4_3",b:"b10_4",w:2},
+      {a:"b6_3",b:"b9_2",w:3},{a:"b6_1",b:"b9_4",w:2},{a:"b6_2",b:"b9_3",w:1},
+      {a:"b6_1",b:"b8_1",w:2},{a:"b3_1",b:"b4_3",w:2},{a:"b3_2",b:"b4_1",w:2},
+      {a:"b3_1",b:"b9_1",w:2},{a:"b10_1",b:"b2_4",w:3},{a:"b10_4",b:"b2_3",w:2},{a:"b5_3",b:"b3_4",w:1}
+    ];
+    
+    // Init positions
+    var nm = {};
+    N.forEach(function(n, i){
+      var angle = (i / N.length) * Math.PI * 2;
+      var r = 180 + Math.random() * 120;
+      n.x = Math.cos(angle) * r;
+      n.y = Math.sin(angle) * r;
+      n.vx = 0; n.vy = 0;
+      n.r = 7 + n.w * 16;
+      n.glow = 0;
+      n.nbr = {};
+      nm[n.i] = n;
+    });
+    E.forEach(function(e){
+      if(nm[e.a] && nm[e.b]){
+        nm[e.a].nbr[e.b] = true;
+        nm[e.b].nbr[e.a] = true;
+      }
+    });
+    
+    function toS(wx,wy){ return {x:wx*zoom+W/2+panX, y:wy*zoom+H/2+panY}; }
+    function toW(sx,sy){ 
+      var r = c.getBoundingClientRect();
+      return {x:(sx-r.left-W/2-panX)/zoom, y:(sy-r.top-H/2-panY)/zoom}; 
+    }
+    
+    function findN(wx,wy){
+      var best = null, bd = 999;
+      N.forEach(function(n){
+        var dx=n.x-wx, dy=n.y-wy, d=Math.sqrt(dx*dx+dy*dy);
+        if(d < n.r+5 && d < bd){ bd=d; best=n; }
+      });
+      return best;
+    }
+    
+    // Physics
+    function step(){
+      if(!physOn) return;
+      var damp = 0.85, rep = 6000, sK = 0.006, sL = 110, cP = 0.0003;
+      var i, j, a, b, dx, dy, d, f, fx, fy;
+      for(i=0;i<N.length;i++){
+        for(j=i+1;j<N.length;j++){
+          a=N[i]; b=N[j];
+          dx=b.x-a.x; dy=b.y-a.y;
+          d=Math.sqrt(dx*dx+dy*dy)||1;
+          f=Math.min(rep/(d*d), 4);
+          fx=(dx/d)*f; fy=(dy/d)*f;
+          a.vx-=fx; a.vy-=fy; b.vx+=fx; b.vy+=fy;
+        }
+      }
+      E.forEach(function(e){
+        a=nm[e.a]; b=nm[e.b];
+        if(!a||!b) return;
+        dx=b.x-a.x; dy=b.y-a.y;
+        d=Math.sqrt(dx*dx+dy*dy)||1;
+        var tgt=sL*(e.w>=3?0.8:1.2);
+        f=(d-tgt)*sK*(e.w||1);
+        fx=(dx/d)*f; fy=(dy/d)*f;
+        a.vx+=fx; a.vy+=fy; b.vx-=fx; b.vy-=fy;
+      });
+      N.forEach(function(n){
+        if(n===drag) return;
+        n.vx*=damp; n.vy*=damp;
+        n.vx-=n.x*cP; n.vy-=n.y*cP;
+        n.x+=n.vx; n.y+=n.vy;
+      });
+      // Collision
+      for(i=0;i<N.length;i++){
+        for(j=i+1;j<N.length;j++){
+          a=N[i]; b=N[j];
+          dx=b.x-a.x; dy=b.y-a.y;
+          d=Math.sqrt(dx*dx+dy*dy)||1;
+          var minD=a.r+b.r+3;
+          if(d<minD){
+            var ov=(minD-d)*0.5, nx=dx/d, ny=dy/d;
+            if(a!==drag){a.x-=nx*ov;a.y-=ny*ov;}
+            if(b!==drag){b.x+=nx*ov;b.y+=ny*ov;}
+          }
+        }
+      }
+    }
+    
+    // Draw
+    function hex2rgb(hex){
+      var r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+      return {r:r,g:g,b:b};
+    }
+    
+    function draw(){
+      t = performance.now();
+      step();
+      x.clearRect(0,0,W,H);
+      
+      // BG
+      var bg = x.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.7);
+      bg.addColorStop(0,'#0f0d1a'); bg.addColorStop(1,'#0a0a0f');
+      x.fillStyle = bg; x.fillRect(0,0,W,H);
+      
+      // Grid
+      if(zoom>0.5){
+        x.strokeStyle='rgba(212,175,55,0.015)'; x.lineWidth=1;
+        var gs=80*zoom, ox=(panX%gs+gs)%gs, oy=(panY%gs+gs)%gs;
+        for(var gx=ox;gx<W;gx+=gs){x.beginPath();x.moveTo(gx,0);x.lineTo(gx,H);x.stroke();}
+        for(var gy=oy;gy<H;gy+=gs){x.beginPath();x.moveTo(0,gy);x.lineTo(W,gy);x.stroke();}
+      }
+      
+      // Edges
+      E.forEach(function(e){
+        var a=nm[e.a], b=nm[e.b];
+        if(!a||!b) return;
+        var sa=toS(a.x,a.y), sb=toS(b.x,b.y);
+        var isH = sel && (sel.i===e.a || sel.i===e.b);
+        var isS = searchQ && (a.l.indexOf(searchQ)>=0 || b.l.indexOf(searchQ)>=0);
+        var alpha = (sel && !isH) ? 0.25 : (searchQ && !isS ? 0.15 : 1);
+        
+        var mx=(sa.x+sb.x)/2, my=(sa.y+sb.y)/2;
+        var dd=Math.sqrt((sb.x-sa.x)*(sb.x-sa.x)+(sb.y-sa.y)*(sb.y-sa.y));
+        var curv=Math.min(dd*0.08,25);
+        var nx=-(sb.y-sa.y)/dd*curv*0.3, ny=(sb.x-sa.x)/dd*curv*0.3;
+        
+        x.beginPath(); x.moveTo(sa.x,sa.y); x.quadraticCurveTo(mx+nx,my+ny,sb.x,sb.y);
+        if(isH||isS){
+          x.strokeStyle='rgba(212,175,55,'+(0.5*alpha)+')';
+          x.lineWidth=(e.w||1)*1.5+1; x.stroke();
+          x.strokeStyle='rgba(212,175,55,'+(0.12*alpha)+')';
+          x.lineWidth=(e.w||1)*3+2; x.stroke();
+          // Particle
+          var pt=(t*0.0008)%1;
+          var px=(1-pt)*(1-pt)*sa.x+2*(1-pt)*pt*(mx+nx)+pt*pt*sb.x;
+          var py=(1-pt)*(1-pt)*sa.y+2*(1-pt)*pt*(my+ny)+pt*pt*sb.y;
+          x.beginPath(); x.arc(px,py,2.5,0,Math.PI*2);
+          x.fillStyle='rgba(212,175,55,'+(0.6*alpha)+')'; x.fill();
+        } else {
+          x.strokeStyle='rgba(212,175,55,'+(0.07*alpha)+')';
+          x.lineWidth=(e.w||1)*0.7; x.stroke();
+        }
+      });
+      
+      // Nodes
+      N.forEach(function(n){
+        var s=toS(n.x,n.y);
+        var col=BOOKS[n.g]?BOOKS[n.g].c:'#D4AF37';
+        var rgb=hex2rgb(col);
+        var isH=hov===n, isS=sel===n, isC=sel&&sel.nbr[n.i];
+        var isSM=searchQ&&n.l.indexOf(searchQ)>=0;
+        var dim=(sel&&!isS&&!isC)||(searchQ&&!isSM);
+        
+        n.glow += ((isH||isS?1:0)-n.glow)*0.15;
+        
+        // Outer glow
+        if(n.glow>0.01){
+          var g=x.createRadialGradient(s.x,s.y,n.r*0.5,s.x,s.y,n.r*3);
+          g.addColorStop(0,'rgba('+rgb.r+','+rgb.g+','+rgb.b+','+(0.3*n.glow)+')');
+          g.addColorStop(1,'rgba('+rgb.r+','+rgb.g+','+rgb.b+',0)');
+          x.fillStyle=g; x.beginPath(); x.arc(s.x,s.y,n.r*3,0,Math.PI*2); x.fill();
+        }
+        
+        // Pulse
+        if(isS){
+          var pulse=Math.sin(t*0.003)*0.3+0.7;
+          x.beginPath(); x.arc(s.x,s.y,n.r+5+pulse*4,0,Math.PI*2);
+          x.strokeStyle='rgba('+rgb.r+','+rgb.g+','+rgb.b+','+(0.2*pulse)+')';
+          x.lineWidth=1.5; x.stroke();
+        }
+        
+        // Body
+        var al=dim?0.15:(isH||isS?1:0.75);
+        x.beginPath(); x.arc(s.x,s.y,n.r,0,Math.PI*2);
+        var fg=x.createRadialGradient(s.x-n.r*0.3,s.y-n.r*0.3,0,s.x,s.y,n.r);
+        fg.addColorStop(0,'rgba('+Math.min(255,rgb.r+40)+','+Math.min(255,rgb.g+40)+','+Math.min(255,rgb.b+40)+','+al+')');
+        fg.addColorStop(1,'rgba('+rgb.r+','+rgb.g+','+rgb.b+','+(al*0.8)+')');
+        x.fillStyle=fg; x.fill();
+        x.strokeStyle='rgba('+rgb.r+','+rgb.g+','+rgb.b+','+(dim?0.1:0.5)+')';
+        x.lineWidth=isS?2:1; x.stroke();
+        
+        // Label
+        if(showLbl && zoom>0.4){
+          var la=dim?0.15:(isH||isS?1:0.7);
+          x.fillStyle='rgba(232,230,227,'+la+')';
+          x.font=(isS?'600 ':'400 ')+Math.max(10,Math.min(13,n.r*0.65))+'px Inter,-apple-system,sans-serif';
+          x.textAlign='center'; x.textBaseline='top';
+          x.shadowColor='rgba(0,0,0,0.8)'; x.shadowBlur=4;
+          x.fillText(n.l,s.x,s.y+n.r+5);
+          x.shadowBlur=0;
+        }
+        
+        // Badge
+        if(zoom>0.6 && !dim){
+          var ab=BOOKS[n.g]?BOOKS[n.g].a:'';
+          if(ab){
+            x.font='9px Inter,sans-serif';
+            x.textAlign='center'; x.textBaseline='middle';
+            var tw=x.measureText(ab).width+8;
+            x.fillStyle='rgba('+rgb.r+','+rgb.g+','+rgb.b+',0.15)';
+            x.beginPath();
+            x.moveTo(s.x-tw/2+4,s.y-n.r-14);
+            x.lineTo(s.x+tw/2-4,s.y-n.r-14);
+            x.arcTo(s.x+tw/2,s.y-n.r-14,s.x+tw/2,s.y-n.r-2,4);
+            x.lineTo(s.x+tw/2,s.y-n.r-2);
+            x.arcTo(s.x+tw/2,s.y-n.r+10,s.x+tw/2-4,s.y-n.r+10,4);
+            x.lineTo(s.x-tw/2+4,s.y-n.r+10);
+            x.arcTo(s.x-tw/2,s.y-n.r+10,s.x-tw/2,s.y-n.r-2,4);
+            x.lineTo(s.x-tw/2,s.y-n.r-2);
+            x.arcTo(s.x-tw/2,s.y-n.r-14,s.x-tw/2+4,s.y-n.r-14,4);
+            x.fill();
+            x.fillStyle='rgba('+rgb.r+','+rgb.g+','+rgb.b+',0.7)';
+            x.fillText(ab,s.x,s.y-n.r-4);
+          }
+        }
+      });
+      
+      // Tooltip
+      var ttEl = document.getElementById('kg-tip');
+      if(hov && ttEl){
+        var sp=toS(hov.x,hov.y);
+        var col=BOOKS[hov.g]?BOOKS[hov.g].c:'#D4AF37';
+        var cr=c.getBoundingClientRect();
+        ttEl.querySelector('.tt-title').textContent=hov.l;
+        ttEl.querySelector('.tt-title').style.color=col;
+        ttEl.querySelector('.tt-book').textContent='📖 '+hov.g;
+        ttEl.querySelector('.tt-desc').textContent=hov.d;
+        ttEl.style.display='block';
+        var tx=cr.left+sp.x+20, ty=cr.top+sp.y-20;
+        if(tx+300>window.innerWidth) tx=cr.left+sp.x-320;
+        if(ty+150>window.innerHeight) ty=cr.top+sp.y-150;
+        ttEl.style.left=tx+'px'; ttEl.style.top=ty+'px';
+      } else if(ttEl) {
+        ttEl.style.display='none';
+      }
+      
+      requestAnimationFrame(draw);
+    }
+    
+    // Events
+    c.addEventListener('mousemove', function(e){
+      var w=toW(e.clientX,e.clientY);
+      if(drag){ drag.x=w.x; drag.y=w.y; drag.vx=0; drag.vy=0; return; }
+      if(isPan){ panX=e.clientX-psx; panY=e.clientY-psy; return; }
+      hov=findN(w.x,w.y);
+      c.style.cursor=hov?'pointer':'grab';
+    });
+    c.addEventListener('mousedown', function(e){
+      var w=toW(e.clientX,e.clientY);
+      var n=findN(w.x,w.y);
+      if(n){ drag=n; sel=(sel===n)?null:n; c.style.cursor='grabbing'; }
+      else { sel=null; isPan=true; psx=e.clientX-panX; psy=e.clientY-panY; c.style.cursor='grabbing'; }
+    });
+    c.addEventListener('mouseup', function(){ drag=null; isPan=false; c.style.cursor=hov?'pointer':'grab'; });
+    c.addEventListener('mouseleave', function(){ drag=null; isPan=false; hov=null; });
+    c.addEventListener('wheel', function(e){
+      e.preventDefault();
+      var f=e.deltaY>0?0.93:1.07;
+      var nz=Math.max(0.25,Math.min(4,zoom*f));
+      var r=c.getBoundingClientRect();
+      var wx=(e.clientX-r.left-W/2-panX)/zoom;
+      var wy=(e.clientY-r.top-H/2-panY)/zoom;
+      panX=e.clientX-r.left-W/2-wx*nz;
+      panY=e.clientY-r.top-H/2-wy*nz;
+      zoom=nz;
+    }, {passive:false});
+    
+    // Touch
+    var lt=null, td=0;
+    c.addEventListener('touchstart', function(e){
+      if(e.touches.length===1){
+        e.preventDefault();
+        var p=e.touches[0], w=toW(p.clientX,p.clientY);
+        var n=findN(w.x,w.y);
+        if(n){ drag=n; sel=(sel===n)?null:n; }
+        else { isPan=true; psx=p.clientX-panX; psy=p.clientY-panY; }
+        lt={x:p.clientX,y:p.clientY};
+      } else if(e.touches.length===2){
+        e.preventDefault();
+        var dx=e.touches[1].clientX-e.touches[0].clientX;
+        var dy=e.touches[1].clientY-e.touches[0].clientY;
+        td=Math.sqrt(dx*dx+dy*dy);
+      }
+    }, {passive:false});
+    c.addEventListener('touchmove', function(e){
+      if(e.touches.length===1){
+        e.preventDefault();
+        var p=e.touches[0];
+        if(drag){ var w=toW(p.clientX,p.clientY); drag.x=w.x; drag.y=w.y; drag.vx=0; drag.vy=0; }
+        else if(isPan){ panX=p.clientX-psx; panY=p.clientY-psy; }
+      } else if(e.touches.length===2){
+        e.preventDefault();
+        var dx=e.touches[1].clientX-e.touches[0].clientX;
+        var dy=e.touches[1].clientY-e.touches[0].clientY;
+        var nd=Math.sqrt(dx*dx+dy*dy);
+        if(td>0) zoom=Math.max(0.25,Math.min(4,zoom*(nd/td)));
+        td=nd;
+      }
+    }, {passive:false});
+    c.addEventListener('touchend', function(){ drag=null; isPan=false; lt=null; td=0; });
+    
+    // Search
+    var si=document.getElementById('kg-search');
+    if(si) si.addEventListener('input', function(e){ searchQ=e.target.value.trim(); });
+    
+    // Controls
+    window.kgReset=function(){ panX=0;panY=0;zoom=1;sel=null;searchQ='';if(si)si.value=''; };
+    window.kgTogglePhys=function(){ physOn=!physOn; };
+    window.kgToggleLbl=function(){ showLbl=!showLbl; };
+    
+    // Legend
+    var leg=document.getElementById('kg-legend');
+    if(leg){
+      var lh='';
+      Object.keys(BOOKS).forEach(function(k){
+        lh+='<div style="display:flex;align-items:center;gap:6px;margin:3px 0;font-size:11px;color:rgba(232,230,227,0.5)"><div style="width:7px;height:7px;border-radius:50%;background:'+BOOKS[k].c+';flex-shrink:0"></div>'+k+'</div>';
+      });
+      leg.innerHTML=lh;
+    }
+    
+    draw();
+    console.log('KG: initialized with', N.length, 'nodes and', E.length, 'edges');
+  });
+})();
+</script>
+</body>
+</html>
